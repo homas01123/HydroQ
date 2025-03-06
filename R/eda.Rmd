@@ -1,0 +1,77 @@
+---
+title: "Water Quality EDA"
+author: "Soham Mukherjee"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# **1. Load Libraries & Data**
+```{r}
+library(tidyverse)
+library(GGally)
+library(corrplot)
+library(explore)
+library(mgcv)
+library(randomForest)
+library(skimr)
+
+do_merged = read.csv("C:/R/HydroQ//data/insitu_wq_data.csv", header = T)
+df <- do_merged
+```
+
+# **2. Data Summary**
+```{r}
+glimpse(df)
+skim(df)
+colSums(is.na(df))
+```
+
+# **3. Correlation Analysis**
+```{r}
+df_cor <- df %>% select(water_temp_celcius, doxy_mg_L, ammonia_umol_kg, pH, chl_a_mg_L) #%>% na.omit()
+cor_matrix <- cor(df_cor, use = "pairwise")
+corrplot(cor_matrix, method = "color", type = "upper", tl.col = "black", tl.cex = 0.8, addCoef.col = "black")
+```
+
+# **4. Visualizing Distributions**
+```{r}
+df %>%
+  select(water_temp_celcius, doxy_mg_L, ammonia_umol_kg, pH, chl_a_mg_L) %>%
+  pivot_longer(cols = everything(), names_to = "Variable", values_to = "Value") %>%
+  ggplot(aes(x = Value, fill = Variable)) +
+  geom_histogram(bins = 30, alpha = 0.6, position = "identity") +
+  facet_wrap(~ Variable, scales = "free") +
+  theme_minimal()
+```
+
+# **5. Checking Non-Linear Relationships**
+```{r}
+# LOESS Smoothing
+ggplot(df, aes(x = water_temp_celcius, y = doxy_mg_L)) +
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "loess", color = "blue", se = TRUE) +
+  theme_minimal()
+```
+
+```{r}
+# Generalized Additive Models (GAM)
+# gam_model <- gam(doxy_mg_L ~ s(water_temp_celcius) + s(pH) + s(ammonia_umol_kg), 
+#                  data = df, method = "REML")
+# summary(gam_model)
+# plot(gam_model, pages = 1, residuals = TRUE)
+```
+
+# **6. Feature Importance with Random Forest**
+```{r}
+# df_clean <- df %>% select(water_temp_celcius, doxy_mg_L, ammonia_umol_kg, pH, chl_a_mg_L) %>% na.omit()
+# rf_model <- randomForest(doxy_mg_L ~ ., data = df_clean, importance = TRUE)
+# varImpPlot(rf_model)
+```
+
+# **7. Automated EDA with Explore Package**
+```{r}
+explore(df)
