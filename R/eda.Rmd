@@ -2,7 +2,9 @@
 title: "Water Quality EDA"
 author: "Soham Mukherjee"
 date: "`r Sys.Date()`"
-output: html_document
+output:
+  html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -59,19 +61,16 @@ ggplot(df, aes(x = water_temp_celcius, y = doxy_mg_L)) +
 
 ```{r}
 # Generalized Additive Models (GAM)
-# gam_model <- gam(doxy_mg_L ~ s(water_temp_celcius) + s(pH) + s(ammonia_umol_kg), 
-#                  data = df, method = "REML")
-# summary(gam_model)
-# plot(gam_model, pages = 1, residuals = TRUE)
+gam_model <- gam(doxy_mg_L ~ s(water_temp_celcius) + s(chl_a_mg_L) + s(pH),
+                 data = df, method = "REML")
+summary(gam_model)
+plot(gam_model, pages = 1, residuals = TRUE)
 ```
 
 # **6. Feature Importance with Random Forest**
 ```{r}
-# df_clean <- df %>% select(water_temp_celcius, doxy_mg_L, ammonia_umol_kg, pH, chl_a_mg_L) %>% na.omit()
-# rf_model <- randomForest(doxy_mg_L ~ ., data = df_clean, importance = TRUE)
-# varImpPlot(rf_model)
+df_clean <- df %>% select(water_temp_celcius, doxy_mg_L, #ammonia_umol_kg, 
+                          pH, chl_a_mg_L) %>% na.omit()
+rf_model <- randomForest(doxy_mg_L ~ ., data = df_clean, importance = TRUE)
+varImpPlot(rf_model)
 ```
-
-# **7. Automated EDA with Explore Package**
-```{r}
-explore(df)
