@@ -3,6 +3,12 @@ import pickle
 
 import matplotlib.pyplot as plt
 import numpy as np
+from visualize_model import (
+    plot_feature_importance,
+    plot_prediction_results,
+    plot_training_history,
+    plot_uncertainty_analysis,
+)
 from wq_uncertainty_model import build_model, evaluate_model, load_data, train_model
 
 
@@ -82,25 +88,42 @@ def main():
     print("Training model...")
     model, history = train_model(model, X_train, y_train, X_val, y_val, epochs=200)
 
-    # Plot training history
-    plt.figure(figsize=(12, 5))
-    plt.subplot(1, 2, 1)
-    plt.plot(history.history["loss"], label="Training Loss")
-    plt.plot(history.history["val_loss"], label="Validation Loss")
-    plt.xlabel("Epoch")
-    plt.ylabel("Loss")
-    plt.legend()
+    # Create a visualization directory
+    vis_dir = "visualizations"
+    os.makedirs(vis_dir, exist_ok=True)
 
-    plt.subplot(1, 2, 2)
-    # Fix: Use the actual metric name in the history dictionary
-    plt.plot(history.history["mean_prediction_mse"], label="Training MSE")
-    plt.plot(history.history["val_mean_prediction_mse"], label="Validation MSE")
-    plt.xlabel("Epoch")
-    plt.ylabel("MSE")
-    plt.legend()
+    # Generate comprehensive training visualizations
+    print("Generating training visualizations...")
+    plot_training_history(history, save_dir=vis_dir)
 
-    plt.tight_layout()
-    plt.savefig("training_history.png")
+    # Generate prediction and evaluation visualizations
+    print("Generating prediction visualizations...")
+    plot_prediction_results(
+        model,
+        X_train,
+        y_train,
+        X_val,
+        y_val,
+        X_test,
+        y_test,
+        scaler_y,
+        save_dir=vis_dir,
+    )
+
+    # Generate uncertainty analysis
+    print("Generating uncertainty analysis...")
+    plot_uncertainty_analysis(model, X_test, y_test, scaler_y, save_dir=vis_dir)
+
+    # Generate feature analysis if raw features are available
+    try:
+        # If original data is available, generate feature importance plots
+        print("Generating feature analysis...")
+        original_data = pd.read_csv(data_path, encoding=encoding)
+        X_raw = original_data[[chl_col, temp_col]].values
+        feature_names = [chl_col, temp_col]
+        plot_feature_importance(model, X_train, X_raw, feature_names, save_dir=vis_dir)
+    except Exception as e:
+        print(f"Could not generate feature analysis: {str(e)}")
 
     # Evaluate the model
     print("Evaluating model...")

@@ -11,6 +11,7 @@ HydroQ is a machine learning model for predicting dissolved oxygen (DO) levels i
 - [Interpreting Results](#interpreting-results)
 - [Development Setup](#development-setup)
 - [Troubleshooting](#troubleshooting)
+- [Visualizations](#visualizations)
 
 ## Installation
 
@@ -187,3 +188,25 @@ python predict_do.py --file ../data/test_data.csv --plot test_results.png
 ```
 
 For more assistance, please create an issue in the repository.
+
+## Visualizations
+
+The training process generates comprehensive visualizations in the `visualizations/` directory:
+
+1. **Training History**:
+   - `training_history.png`: Shows loss and MSE metrics over epochs
+   - `learning_curve.png`: Learning curve on log scale for detailed view
+
+2. **Prediction Performance**:
+   - `prediction_scatter_plots.png`: Scatter plots of predictions vs actual values for train/val/test
+   - `residual_plots.png`: Residual analysis for train/val/test sets
+
+3. **Uncertainty Analysis**:
+   - `uncertainty_vs_error.png`: How well uncertainty estimates correlate with errors
+   - `uncertainty_calibration.png`: Whether uncertainty is calibrated (well-estimated)
+   - `error_distribution.png`: Distribution of prediction errors
+
+4. **Feature Analysis**:
+   - `feature_correlation.png`: Correlation matrix between input features
+
+These visualizations help assess model performance, understand prediction uncertainties, and identify potential issues.
