@@ -51,10 +51,7 @@ def get_surface_temperature(lat, lon, date_str):
             t2m = parameter['T2M'][date_key] if 'T2M' in parameter else None
             ts = parameter['TS'][date_key] if 'TS' in parameter else None
             
-            return {
-                'air_temperature_2m': t2m,
-                'skin_temperature': ts
-            }
+            return ts 
         except (KeyError, TypeError) as e:
             print(f"Error parsing response: {e}")
             return None
@@ -73,19 +70,14 @@ def main():
     args = parser.parse_args()
     
     # Get temperature data
-    temp_data = get_surface_temperature(args.lat, args.lon, args.date)
+    temp = get_surface_temperature(args.lat, args.lon, args.date)
     
-    if temp_data:
+    if temp is not None:
         print("\nSurface Temperature Data:")
         print(f"Location: {args.lat}, {args.lon}")
         print(f"Date: {args.date}")
-        
-        if temp_data['air_temperature_2m'] is not None:
-            print(f"Air Temperature at 2m: {temp_data['air_temperature_2m']} °C")
-        
-        if temp_data['skin_temperature'] is not None:
-            print(f"Surface Skin Temperature: {temp_data['skin_temperature']} °C")
-            print("(This is equivalent to LST for land areas or SST for water bodies)")
+        print(f"Surface Skin Temperature: {temp} °C")
+        print("(This is equivalent to LST for land areas or SST for water bodies)")
     else:
         print("Failed to retrieve temperature data.")
 
