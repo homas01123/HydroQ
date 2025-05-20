@@ -1,4 +1,4 @@
-# HydroQ - Water Quality Prediction with Uncertainty
+# HydroQ - Water Quality Prediction with Uncertainty (DEMO and in PROGRESS)
 
 HydroQ is a machine learning model for predicting dissolved oxygen (DO) levels in water based on chlorophyll and temperature measurements, with uncertainty quantification.
 
